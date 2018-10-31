@@ -27,8 +27,8 @@
 /* FADC Defaults/Globals */
 
 /*Used in faSetProcMode() */
-#define FADC_MODE          9  // 9 - Pulse Parameter (ped, sum, time);  10 - Debug Mode (9 + Raw Samples) 
-#define FADC_WINDOW_WIDTH  55
+#define FADC_MODE          10  // 9 - Pulse Parameter (ped, sum, time);  10 - Debug Mode (9 + Raw Samples) 
+#define FADC_WINDOW_WIDTH  79 // was 55
 #define FADC_LATENCY       79
 #define FADC_NSB           2  // # of samples *before* Threshold crossing (TC) to include in sum
 #define FADC_NSA           55 // # of samples *after* Threshold crossing (TC) to include in sum
@@ -36,7 +36,7 @@
 #define FADC_THRESHOLD     5
 #define FADC_NSAT          4 //# of consecutive samples over threshold required for pulse
 #define chan_mask  0x0000 // chan mask for threshold setting 
-#define WANT_THRESHOLD 0  //whether or not want threshold settings
+#define WANT_THRESHOLD 1  //whether or not want threshold settings
 
 int FA_SLOT;
 /* FADC Library Variables */
@@ -726,20 +726,31 @@ vmeDmaConfig(2, 5, 1);
     ///////
     //MLU//
     ///////
-  
-  unsigned long BCMu_value = 0;
-  unsigned long BCMd_value = 0;
-  BCMu_value = v1495BCM_ReadCODA(0);
-  BCMd_value = v1495BCM_ReadCODA(1);
+
+  //Get Upstream BCM words
+  unsigned short bcmu_0 = v1495BCM_ReadCODAindi(0,0);	//get lowest 16 bits from upstream bcm sum
+  unsigned short bcmu_1 = v1495BCM_ReadCODAindi(0,1);
+  unsigned short bcmu_2 = v1495BCM_ReadCODAindi(0,2);
+  unsigned short bcmu_3 = v1495BCM_ReadCODAindi(0,3);
+  unsigned int bcmu_h = (bcmu_3<<16) + bcmu_2;
+  unsigned int bcmu_l = (bcmu_1<<16) + bcmu_0;
+
+  //Get Downstream BCM words
+  unsigned short bcmd_0 = v1495BCM_ReadCODAindi(1,0);	//get lowest 16 bits from downstream bcm sum
+  unsigned short bcmd_1 = v1495BCM_ReadCODAindi(1,1);
+  unsigned short bcmd_2 = v1495BCM_ReadCODAindi(1,2);
+  unsigned short bcmd_3 = v1495BCM_ReadCODAindi(1,3);
+  unsigned int bcmd_h = (bcmd_3<<16) + bcmd_2;
+  unsigned int bcmd_l = (bcmd_1<<16) + bcmd_0;
 
   BANKOPEN(1495,BT_UI4,0);		//MLU Readout bank
     vmeDmaConfig(2,3,0);
     *dma_dabufp++ = LSWAP(0x14951495);
     *dma_dabufp++ = LSWAP(v1495ClockCountReadCODA());			//32 bit Clock Count
-    *dma_dabufp++ = LSWAP((unsigned int)(BCMu_value>>32));		//upper 32 bits of upstream bcm
-    *dma_dabufp++ = LSWAP((unsigned int)(BCMu_value & 0xFFFF));		//lower 32 bits of upstream bcm
-    *dma_dabufp++ = LSWAP((unsigned int)(BCMd_value>>32));		//upper 32 bits of downstream bcm
-    *dma_dabufp++ = LSWAP((unsigned int)(BCMd_value & 0xFFFF));		//lower 32 bits of downstream bcm
+    *dma_dabufp++ = LSWAP(bcmu_h);		//upper 32 bits of upstream bcm
+    *dma_dabufp++ = LSWAP(bcmu_l);		//lower 32 bits of upstream bcm
+    *dma_dabufp++ = LSWAP(bcmd_h);		//upper 32 bits of downstream bcm
+    *dma_dabufp++ = LSWAP(bcmd_l);		//lower 32 bits of downstream bcm
     *dma_dabufp++ = LSWAP(0x14950000);
     vmeDmaConfig(2, 5, 1);
   BANKCLOSE;

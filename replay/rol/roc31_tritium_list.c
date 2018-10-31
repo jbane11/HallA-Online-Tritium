@@ -29,8 +29,8 @@
 /* FADC Defaults/Globals */
 
 /*Used in faSetProcMode() */
-#define FADC_MODE          9 // 9 - Pulse Parameter (ped, sum, time);  10 - Debug Mode (9 + Raw Samples) 
-#define FADC_WINDOW_WIDTH  55 // was 55
+#define FADC_MODE          10 // 9 - Pulse Parameter (ped, sum, time);  10 - Debug Mode (9 + Raw Samples) 
+#define FADC_WINDOW_WIDTH  88 // was 55
 #define FADC_LATENCY       88 // 
 #define FADC_LA_Sh         73 //was 78 // was 62 
 #define FADC_WD_Sh         60 // was 
@@ -40,7 +40,7 @@
 #define chan_mask  0x0000 // chan mask for threshold setting 
 
 //wether or not to use threshold
-#define WANT_THRESHOLD 0
+#define WANT_THRESHOLD 1
 
 int FA_SLOT;
 /* FADC Library Variables */
@@ -146,28 +146,18 @@ rocDownload()
        faEnableBusError(faSlot(islot));
       //  faSetThreshold(faSlot(islot), 0, 0xffff);
       
-     if(WANT_THRESHOLD){
-       for (ifa = 0; ifa<16; ifa++)
-        {
-          thrshflag |= 1 << ifa;
-          if(islot==0) faSetThreshold(faSlot(islot), L1thrshold[ifa]+FADC_THRESHOLD , thrshflag);
-          if(islot==1) faSetThreshold(faSlot(islot), L2thrshold[ifa]+FADC_THRESHOLD , thrshflag);
-          if(islot==2) faSetThreshold(faSlot(islot), L3thrshold[ifa]+FADC_THRESHOLD , thrshflag);
-          if(islot==3) faSetThreshold(faSlot(islot), 1, thrshflag);
-  
-          thrshflag = chan_mask;    
-	} 
-     }
-          
-   else{
-      if(islot==2){           
-            faSetThreshold(faSlot(islot), 1, 0xdfff); //0xffff sets all channels to same threshold
-            faSetThreshold(faSlot(islot), 43, 0x2000); //0xffff sets all channels to same threshold
-         }
-        else faSetThreshold(faSlot(islot), 1, 0xffff); //0xffff sets all channels to same threshold
-    }
-       /* Set input DAC level */ //turn off adjusting DAC for slot 2 
-     /// adding islot 0,1,2 
+     if(WANT_THRESHOLD)
+       {
+       if(islot==0)      faSetThreshold(faSlot(islot), 300+25 , 0xffff);	//GC,SO,Ref
+       else if(islot==1) faSetThreshold(faSlot(islot), 300+25 , 0xffff);	//S2
+       else if(islot==2) faSetThreshold(faSlot(islot), 300+25 , 0xffff);	//S2
+       else              faSetThreshold(faSlot(islot), 1, 0xffff); //raster, BPMs, PRL1, PRL2
+       }
+     else
+       {
+       faSetThreshold(faSlot(islot), 1, 0xffff); //0xffff sets all channels to same threshold
+       }
+
 if(islot==0)      {
         faSetDAC(faSlot(islot), 3072, 0x0001);   ///S0
 	faSetDAC(faSlot(islot), 3088, 0x0002);
@@ -187,7 +177,6 @@ if(islot==0)      {
 	faSetDAC(faSlot(islot), 2998, 0x8000);
 	//faSetDAC(faSlot(islot), 3200, 0xffff);  //previous default value
        }
-/// islot 1
 if(islot==1){
         faSetDAC(faSlot(islot), 3040, 0x0001); /// S2L
 	faSetDAC(faSlot(islot), 3059, 0x0002);
@@ -207,7 +196,6 @@ if(islot==1){
 	faSetDAC(faSlot(islot), 3046, 0x8000);
 	//faSetDAC(faSlot(islot), 3200, 0xffff);  //previous default value
        }
-// islot2 
 if(islot==2){
         faSetDAC(faSlot(islot), 3030, 0x0001); // S2R
 	faSetDAC(faSlot(islot), 3047, 0x0002);
@@ -272,7 +260,9 @@ if(islot==2){
 
       // faSetProcMode(faSlot(islot), 10, 85, 40, 5, 60, 1, 4,250,2);
        if(WANT_THRESHOLD)
-         faSetProcMode(faSlot(islot), FADC_MODE, FADC_LATENCY, FADC_WINDOW_WIDTH, 2, 13, 1, 15,400,2);
+         if(islot==3||islot==4||islot==5||islot==6||islot==7)
+             faSetProcMode(faSlot(islot), FADC_MODE, FADC_LA_Sh, FADC_WD_Sh, FADC_NSB, FADC_NSA, 1, 15,800,1);
+         else faSetProcMode(faSlot(islot), FADC_MODE, FADC_LATENCY, FADC_LATENCY, 2, 15, 1, 15,400,4);
        else{
          if(islot==3||islot==4||islot==5||islot==6||islot==7)
              faSetProcMode(faSlot(islot), FADC_MODE, FADC_LA_Sh, FADC_WD_Sh, FADC_NSB, FADC_NSA, 1, 15,800,1);
