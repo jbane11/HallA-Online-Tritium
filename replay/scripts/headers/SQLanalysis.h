@@ -608,7 +608,7 @@ int SQLRunlistStatus(int runnum)
 }
 
 
-struct RunInfo{
+/*struct RunInfo{
 	int runnum=0;
 	TString target="";
 	TString type="";
@@ -650,7 +650,7 @@ void PrintRunInfo(int run){
 	cout<< "time in mins:"<<RI.time_mins<<"\tPS main trigger " <<RI.PS_main<<"\n";
 	} 
 
-
+*/
 
 
 

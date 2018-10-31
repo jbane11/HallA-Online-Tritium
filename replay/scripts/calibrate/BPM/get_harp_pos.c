@@ -1,6 +1,8 @@
 #include "../../headers/rootalias.h"
 #include "../../headers/SQLanalysis.h"
 #include "/adaqfs/home/a-onl/tritium_work/Bane/Tri_offline/headers/inc1.h"
+#include <sys/types.h>
+#include <dirent.h>
 
 using namespace std;
 
@@ -27,10 +29,25 @@ prev used
 					};			
 
 
+
+
+
 */
 void get_harp_pos(string arm="", string in_date="",int debug=0){
 
 SetStyles();
+
+	if(arm=="")
+	{
+		cout << "Which arm are you looking at? (R/L)\n";
+		cin >> arm ;
+	}
+	if(in_date=="")
+	{
+		cout << "What is the date of the harpsans (mmddyyyy)\n";
+		cin >> in_date;
+	}
+	cout <<"\n";
 
 
 TCanvas *C1[2][6];
@@ -71,7 +88,29 @@ TCanvas *C1[2][6];
 		{"17:27:05","17:48:03","18:02:32","18:12:36","18:26:03","18:36:48"},
 		{"17:56:51","17:56:51","18:05:38","18:14:54","18:28:11","18:42:39"}
 				};			
+	vector <string> harpscans;
+	//Find the harp scans: 
+	string dir = string("HarpScans");
+    	vector<string> files = vector<string>();
+	DIR *dp;
+    	struct dirent *dirp;
+    	if((dp  = opendir(dir.c_str())) == NULL) {
+        	cout << "Error(" << errno << ") opening " << dir << endl;
+	        return ;
+    	}
 
+   	while ((dirp = readdir(dp)) != NULL) {
+        	files.push_back(string(dirp->d_name));
+	}
+   	closedir(dp);
+    	for (unsigned int i = 0;i < files.size();i++) {
+        	cout << files[i] << endl;
+	    }
+
+	return;
+
+
+	
   /////////////////////////////////////////////////////////
   //                                                     //
   //    Get data from run file and fit with gaussians    //
