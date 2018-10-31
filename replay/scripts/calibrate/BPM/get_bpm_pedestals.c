@@ -85,6 +85,7 @@ void get_bpm_pedestals(int run=0, char side='i'){
 		H[i]->Fit(Form("f%d",i),"Q","",0,100000);
 		pedestal(i)=f[i]->GetParameter("Mean");
 		H[i]->GetXaxis()->SetRangeUser(pedestal(i)-200*13.57,pedestal(i)+200*13.57);
+		H[i]->GetXaxis()->SetTitle("ADC signal");
 		c1->Update();
 		}
 		/*double peak_avg=0;

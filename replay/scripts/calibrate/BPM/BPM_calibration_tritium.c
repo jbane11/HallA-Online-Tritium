@@ -88,8 +88,8 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 	double xp, xm, yp, ym;
 //BMP pedestals
 	//char side = 'L';
-	double pedestal[9] = {0,17693,  17654,  17142,  17333, 22495, 21997, 18731, 19852};//Right
-	double pedestalL[9] ={0,17671,  18596,  18139,  19015, 22608, 21631, 18331, 16982};//Left
+	double pedestal[9] = {0,21562, 21576, 17662, 17850, 18699, 18132, 18135, 19225 };//Right
+	double pedestalL[9] ={0,40111, 41152, 37072, 38044, 37154, 36032, 35990, 34605 };//Left
 	
 	if(side=='L'){for(int i=0;i<9;i++){pedestal[i]=pedestalL[i];}}
 	
@@ -110,7 +110,7 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 	double calib = 0.01887;
 
   //Day of harp runs in hall A
-  	char date[256] = {"05032018"};
+  	char date[256] = {"09292018"};
 	ifstream fi;
 	char Hresults[256];
 	sprintf(Hresults,"harp_results_%s.txt",date);
@@ -125,6 +125,7 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 
 	// Start of input loop for harp_results and BMP Run.
    		fi>>run_number>>epics_number>>dum3>>dum4>>dum5>>dum6>>dum7>>dum8>>dum9>>dum10;
+		if(run_number<=-1) continue;
 		if(!fi.good()){break;}
 		cout<<"Will look at run "<< run_number<<endl;
 
@@ -140,8 +141,8 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 	
 		//Input file from harp scans
 		filein = TFile::Open(Form("%s/%s_%d.root",root_dir,exp,run_number));
+		if(filein==nullptr)continue;
 		T =(TTree*) filein->Get("T");
-
 	//New divided canvas for the BPM locations
  		c1[numofscans] = new TCanvas(Form("c%d",numofscans),Form("Run %d",run_number),500,500,1300,1000);
         c1[numofscans]->Divide(2,4);
@@ -152,8 +153,8 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 	T->SetBranchStatus("*RrbGmp*",1);
 	T->SetBranchStatus("*LrbGmp*",1);
 	T->SetBranchStatus("*Rrb*",1);
-	T->SetBranchStatus("*Lrb*",1);	
-	
+	T->SetBranchStatus("*Lrb*",1);		
+	T->SetBranchStatus("*.evtypebits");	
 	T->SetBranchStatus("hac_bcm_average",1);
 	double BCM_avg;
 	T->SetBranchAddress("hac_bcm_average",&BCM_avg);
@@ -170,7 +171,7 @@ void BPM_calibration_tritium (char side ='R', int quiet =1){
 	c1[numofscans]->cd(1);
 
 	//Event[numofscans]="right_clkcount>=%f&&right_clkcount<=%f",BCMcuts[numofscans][0],BCMcuts[numofscans][1];
-	TCut current = Form("hac_bcm_average>=%f",cur[numofscans]);
+	TCut current = Form("hac_bcm_average>=%f",0.0);
 	
 
 		///// Calculate the BPM postion from the 4 differrent wire signals, xp,xm,yp,ym!	
