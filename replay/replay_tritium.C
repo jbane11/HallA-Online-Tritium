@@ -177,30 +177,28 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       gHaPhysics->Add(BCM);
       THaPhysicsModule* BCMev = new TriBCM("RightBCMev","Beam Current Monitors","Right","ev",0);
       gHaPhysics->Add(BCMev);
-      /*if(bEloss){
+      if(bEloss){
         // Beam Energy Loss
-        Double_t zbeam_off = -0.075 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
+        Double_t zbeam_off = -0.125 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
        
-        Gmp_Beam_Eloss *ElbR = new Gmp_Beam_Eloss("ElbR","Beam Corrected for Energy Loss",beamchoice,"rpr",zbeam_off);
+        Tri_Beam_Eloss *ElbR = new Tri_Beam_Eloss("ElbR","Beam Corrected for Energy Loss","Rrb","rpr",zbeam_off);
         ElbR->SetDebug(1);
-        ElbR->SetMedium(1.,1.00727,0.0723); // Set medium assuming LH2 Target. According to the Cryotarget Training Slides,
-                                           // the density should be 0.0723 g/cc (agrees more or less w/ NIST table).
+        ElbR->SetMedium(Z,A,Density);
         gHaPhysics->Add(ElbR);
         
         //Track Energy Loss
-        Double_t targ_length = 0.15 ; // In meters. Set to 15 cm for GMp LH2 target
+        Double_t targ_length = 0.25 ; 
         Double_t ztrack_off = 0. ; //For a target centered at z=0, this should equal to 0. (in m)
-        Double_t air_length = 0.3757; // In meters. Set to 0.3543 m for RHRS and 0.2697 m for LHRS for Spring 16.
-                                     //            Set to 0.3757 m for RHRS and 0.3868 m for LHRS for Fall 16.
+        Double_t air_length = 0.8160;
        
-        Gmp_Track_Eloss *EltR = new Gmp_Track_Eloss("EltR","Track Corrected for Energy Loss","exR","rpr",targ_length,ztrack_off,air_length);
+        Tri_Track_Eloss *EltR = new Tri_Track_Eloss("EltR","Track Corrected for Energy Loss","exR","rpr",targ_length,ztrack_off,air_length);
         EltR->SetDebug(1);
-        EltR->SetMedium(1.,1.00727,0.0723); // See above for explanation.
+        EltR->SetMedium(Z,A,Density);
         gHaPhysics->Add(EltR);
 
-        THaPhysicsModule *EKRxe = new THaElectronKine("EKRxe","Best Corrected Electron kinematics in HRS-R","EltR","ElbR",mass_tg);
+        THaPhysicsModule *EKRxe = new THaElectronKine("EKRxe","Energy Loss Corrected Electron kinematics in HRS-R","EltR","ElbR",mass_tg);
         gHaPhysics->Add(EKRxe);
-      }*/
+      }
     }
   }
   //==================================
@@ -331,30 +329,28 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
       THaPhysicsModule* BCMev = new TriBCM("LeftBCMev","Beam Current Monitors","Left","ev",0);
 	  gHaPhysics->Add(BCMev);
-      /*if(bEloss){
+      if(bEloss){
         // Beam Energy Loss
-        Double_t zbeam_off = -0.075 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
+        Double_t zbeam_off = -0.125 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
         
-        Gmp_Beam_Eloss *ElbL = new Gmp_Beam_Eloss("ElbL","Beam Corrected for Energy Loss",beamchoice,"rpr",zbeam_off);
+        Tri_Beam_Eloss *ElbL = new Tri_Beam_Eloss("ElbL","Beam Corrected for Energy Loss","Lrb","rpl",zbeam_off);
         ElbL->SetDebug(1);
-        ElbL->SetMedium(1.,1.00727,0.0723); // Set medium assuming LH2 Target. According to the Cryotarget Training Slides,
-                                           // the density should be 0.0723 g/cc (agrees more or less w/ NIST table).
+        ElbL->SetMedium(Z,A,Density);
         gHaPhysics->Add(ElbL);
         
         //Track Energy Loss
-        Double_t targ_length = 0.15 ; // In meters. Set to 15 cm for GMp LH2 target
+        Double_t targ_length = 0.25 ;
         Double_t ztrack_off = 0. ; //For a target centered at z=0, this should equal to 0. (in m)
-        Double_t air_length = 0.3757; // In meters. Set to 0.3543 m for RHRS and 0.2697 m for LHRS for Spring 16.
-                                      //            Set to 0.3757 m for RHRS and 0.3868 m for LHRS for Fall 16.
+        Double_t air_length = 0.8160;
         
-        Gmp_Track_Eloss *EltL = new Gmp_Track_Eloss("EltL","Track Corrected for Energy Loss","exL","rpl",targ_length,ztrack_off,air_length);
+        Tri_Track_Eloss *EltL = new Tri_Track_Eloss("EltL","Track Corrected for Energy Loss","exL","rpl",targ_length,ztrack_off,air_length);
         EltL->SetDebug(1);
-        EltL->SetMedium(1.,1.00727,0.0723); // See above for explanation.
+        EltL->SetMedium(Z,A,Density);
         gHaPhysics->Add(EltL);
 
-        THaPhysicsModule *EKLxe = new THaElectronKine("EKLxe","Best Corrected Electron kinematics in HRS-L","EltL","ElbL",mass_tg);
+        THaPhysicsModule *EKLxe = new THaElectronKine("EKLxe","Energy Loss Corrected Electron kinematics in HRS-L","EltL","ElbL",mass_tg);
         gHaPhysics->Add(EKLxe);
-      }*/
+      }
     }
   }
   
