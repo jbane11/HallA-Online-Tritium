@@ -9,6 +9,7 @@
 # Feb 20   2018    updated for Triton                  Zhihong Ye
 # May/June 2018    More Tritium updates                Tyler Hague & Evan McClellan
 # July 6   2018    Friendliness/Portability Updates    Tyler Hague
+# Oct 19   2018    MARATHON Pass2 Updates              Tyler Hague
 #
 
 #Set up Directories.
@@ -19,7 +20,7 @@ DB_DIR=/work/halla/triton/tjhague/replay_tritium/replay/DB
 TAPEDIR=/mss/halla/triton/prod/marathon/
 REPLAYDIR=/work/halla/triton/tjhague/replay_tritium/replay/
 BATCHDIR=/work/halla/triton/tjhague/replay_tritium/batch_farm/
-PASS=pass1
+PASS=pass2
 ROOTFILEFORM=tritium_
 RAWFILEFORM=triton_
 WORKFLOWFORM=h3_replay_
@@ -38,6 +39,8 @@ is_integer() {
 runfile=$1
 echo $runfile
 list_name=${runfile%.*}
+list_name=${list_name#*_}
+target=${runfile%%_*}
 
 calib=0
 if [ "$2" == "calibration" ]; then
@@ -48,8 +51,8 @@ fi
 
 while read krun; do
 COUNT=0
-#If the data is already in the cahce, replay it
-if [ -e $RAWDIR$RAWFILEFORM$krun".dat."$COUNT ]; then
+#If the data is already in the cache, replay it
+if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
 
 #
 # Verify if batch_files and .tmp.REPLAY exist
@@ -76,6 +79,7 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat."$COUNT ]; then
 
     echo "export LD_LIBRARY_PATH=\${ANALYZER}::\$ROOTSYS/lib:\${LD_LIBRARY_PATH}" >>batch_files/batch_${krun}
     echo "export PATH=\${ROOTSYS}/bin:\${ANALYZER}:\${PATH}" >>batch_files/batch_${krun}
+    echo "export TARG="$targ >>batch_files/batch_${krun}
     if [ $calib == 1 ]; then
       echo "export CALIBRATION_RUN=yes" >>batch_files/batch_${krun}
       echo "export OUT_DIR="$PASS"_calibration" >>batch_files/batch_${krun}
