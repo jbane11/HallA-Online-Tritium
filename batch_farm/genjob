@@ -80,6 +80,11 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
     echo "export LD_LIBRARY_PATH=\${ANALYZER}::\$ROOTSYS/lib:\${LD_LIBRARY_PATH}" >>batch_files/batch_${krun}
     echo "export PATH=\${ROOTSYS}/bin:\${ANALYZER}:\${PATH}" >>batch_files/batch_${krun}
     echo "export TARG="$targ >>batch_files/batch_${krun}
+    if [ $targ == "He3" ] || [ $targ == "H3" ] || [ $targ == "D2" ] || [ $targ == "H1" ]; then 
+      analyzer -l -q 'get_density.cpp(${krun})'
+    else
+      echo "export DENSITY=0" >>batch_files/batch_${krun}
+    fi
     if [ $calib == 1 ]; then
       echo "export CALIBRATION_RUN=yes" >>batch_files/batch_${krun}
       echo "export OUT_DIR="$PASS"_calibration" >>batch_files/batch_${krun}

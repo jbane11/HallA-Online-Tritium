@@ -38,7 +38,7 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   Bool_t bHelicity=kFALSE;
   Bool_t bBeam=kTRUE;
   Bool_t bPhysics=kTRUE;
-  Bool_t bEloss=kFALSE;
+  Bool_t bEloss=kTRUE;
   Bool_t bOldTrack=kFALSE;
   
   TString rootname;
@@ -50,6 +50,11 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
   TString target;
   target = TString(gSystem->Getenv("TARG"));
+  char* dens = gSystem->Getenv("DENSITY");
+  Double_t Density = atod(dens);
+  if(Density==0){
+    bEloss=kFALSE;
+  }
 
   const char* RNAME=rootname.Data();
   TString ODEF;
@@ -132,37 +137,23 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Double_t mass_H2 = 2.01410178*amu;
       Double_t mass_H3 = 3.0160492*amu;
       Double_t mass_tg = 0.938; //default target 
+      Int_t A = 1;
+      Int_t Z = 1;
 
       if(target=="He3"){
         mass_tg = mass_He3/3.;
+        Z = 2;
+        A = 3;
       }else if(target=="H3"){
         mass_tg = mass_H3/3.;
+        Z = 1;
+        A = 3;
       }else if(target=="D2"){
         mass_tg = mass_H2/2.;
+        Z = 1;
+        A = 2;
       }
-
-      /*string word[5],line;
-      TString filename = Form("/adaqfs/home/adaq/epics/runfiles_tritium_R/Start_of_Run_%d.epics",runnumber);
-      ifstream infile;
-      infile.open(filename);
-      double pos=0;
-      double t2=33106235;
-      double d2=29367355;
-      double he3=21875520;
-
-      while(getline(infile,line)){
-            istringstream str(line);
-            str>>word[0]>>word[1];
-            if(word[0]=="Encoder" && word[1]=="Position"){
-               str>>word[2]>>word[3];
-               pos = atof(word[3].c_str()); 
-               if(abs(pos-t2)<50) mass_tg=mass_H3/3.0;
-               else if(abs(pos-d2)<50) mass_tg=mass_H2/2.0;
-               else if(abs(pos-he3)<50)mass_tg=mass_He3/3.0;
-               break;
-            }
-      }*/
-  
+ 
       THaPhysicsModule *Rgold = new THaGoldenTrack( "R.gold", "HRS-R Golden Track", "R" );
       gHaPhysics->Add(Rgold);
 
@@ -290,36 +281,22 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Double_t mass_H2 = 2.01410178*amu;
       Double_t mass_H3 = 3.0160492*amu;
       Double_t mass_tg = 0.938; //default target 
+      Int_t A = 1;
+      Int_t Z = 1;
       
       if(target=="He3"){
         mass_tg = mass_He3/3.;
+        Z=2;
+        A=3;
       }else if(target=="H3"){
         mass_tg = mass_H3/3.;
+        Z=1;
+        A=3;
       }else if(target=="D2"){
         mass_tg = mass_H2/2.;
+        Z=1;
+        A=2;
       }
-
-      /*string word[5],line;
-      TString filename = Form("/adaqfs/home/adaq/epics/runfiles_tritium_L/Start_of_Run_%d.epics",runnumber);
-      ifstream infile;
-      infile.open(filename);
-      double pos=0;
-      double t2=33106235;
-      double d2=29367355;
-      double he3=21875520;
-
-      while(getline(infile,line)){
-            istringstream str(line);
-            str>>word[0]>>word[1];
-            if(word[0]=="Encoder" && word[1]=="Position"){
-               str>>word[2]>>word[3];
-               pos = atof(word[3].c_str());
-               if(abs(pos-t2)<50) mass_tg=mass_H3/3.0;
-               else if(abs(pos-d2)<50) mass_tg=mass_H2/2.0;
-               else if(abs(pos-he3)<50)mass_tg=mass_He3/3.0;
-               break;
-            }
-      }*/
      
       THaPhysicsModule *Lgold = new THaGoldenTrack( "L.gold", "HRS-L Golden Track", "L" );
       gHaPhysics->Add(Lgold);
