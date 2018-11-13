@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../replay/scripts/headers/SQLAnalysis.h"
+#include "../replay/scripts/headers/SQLanalysis.h"
 
 Double_t He3Boiling(Double_t I){
   return (1 + (-0.004759*I) + (8.69e-05*I*I));
@@ -33,8 +33,11 @@ Double_t H1Density(Double_t I){
   return 0.0708*H1Boiling(I)/25;
 }
 
-void get_density(int run, TString targ){
+void get_density(){
+  int run = atoi(gSystem->Getenv("run"));
+  TString targ = TString(gSystem->Getenv("targ"));
   double current = GetAvgCurrentSQL(run,0);
+  cout << "current = " << current << endl;
   double density = 0;
 
   if(targ=="H1"){
@@ -47,7 +50,7 @@ void get_density(int run, TString targ){
     density=D2Density(current);
   }
 
-  ofstream f(Form("batch_files/batch_%d",run));
+  ofstream f(Form("batch_files/batch_%d",run),std::ofstream::app);
   f << "export DENSITY=" << density << endl;
   f.close();
 }

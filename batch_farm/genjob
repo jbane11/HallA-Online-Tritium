@@ -15,7 +15,7 @@
 #Set up Directories.
 ANALYZERDIR=/work/halla/triton/MARATHON_Replay/analyzer1.6
 VOLATILEDIR=/volatile/halla/triton/Marathon_Rootfiles/
-RAWDIR=/cache/halla/triton/raw/
+RAWDIR=/lustre/expphy/cache/halla/triton/raw/
 DB_DIR=/work/halla/triton/tjhague/replay_tritium/replay/DB
 TAPEDIR=/mss/halla/triton/prod/marathon/
 REPLAYDIR=/work/halla/triton/tjhague/replay_tritium/replay/
@@ -41,6 +41,8 @@ echo $runfile
 list_name=${runfile%.*}
 list_name=${list_name#*_}
 target=${runfile%%_*}
+
+echo ${target}
 
 calib=0
 if [ "$2" == "calibration" ]; then
@@ -79,10 +81,13 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
 
     echo "export LD_LIBRARY_PATH=\${ANALYZER}::\$ROOTSYS/lib:\${LD_LIBRARY_PATH}" >>batch_files/batch_${krun}
     echo "export PATH=\${ROOTSYS}/bin:\${ANALYZER}:\${PATH}" >>batch_files/batch_${krun}
-    echo "export TARG="$targ >>batch_files/batch_${krun}
-    if [ $targ == "He3" ] || [ $targ == "H3" ] || [ $targ == "D2" ] || [ $targ == "H1" ]; then 
-      analyzer -l -q 'get_density.cpp(${krun},${target})'
+    echo "export TARG="$target >>batch_files/batch_${krun}
+    if [ "$target" == "He3" ] || [ "$target" = "H3" ] || [ "$target" = "D2" ] || [ "$target" = "H1" ]; then 
+      export targ=${target}
+      export run=${krun}
+      analyzer -l -q get_density.cpp
     else
+      echo "poop"
       echo "export DENSITY=0" >>batch_files/batch_${krun}
     fi
     if [ $calib == 1 ]; then
@@ -139,11 +144,11 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
 ################################
 #    Submit job to the farm    #  
 ################################
-    if [ $calib == 1 ]; then
-      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
-    else
-      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
-    fi
+#    if [ $calib == 1 ]; then
+#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
+#    else
+#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
+#    fi
 ################################
 ################################
 

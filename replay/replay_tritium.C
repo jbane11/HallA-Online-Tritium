@@ -39,7 +39,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   Bool_t bBeam=kTRUE;
   Bool_t bPhysics=kTRUE;
   Bool_t bEloss=kTRUE;
-  Bool_t bOldTrack=kFALSE;
   
   TString rootname;
   if(OnlineReplay){
@@ -50,7 +49,7 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
   TString target;
   target = TString(gSystem->Getenv("TARG"));
-  char* dens = gSystem->Getenv("DENSITY");
+  const char* dens = gSystem->Getenv("DENSITY");
   Double_t Density = atod(dens);
   if(Density==0){
     bEloss=kFALSE;
@@ -84,12 +83,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     HRSR->AddDetector( new TriFadcScin("s2", "S2 Scintillator - FADC" ));
     HRSR->AddDetector( new THaShower("ps", "Pre-shower pion rej." ));
     HRSR->AddDetector( new THaShower("sh", "Show pion rej." ));
-    
-    if(bOldTrack){
-       THaApparatus* OldTrackR = new TriHRS("OldTrackR","old analyzer track");
-       OldTrackR->AddDetector( new TriXscin("s0","s0 sintillator",kTRUE) );
-       gHaApps->Add( OldTrackR );
-     }
 
     //==================================
     //  Scalers
@@ -226,13 +219,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     HRSL->AddDetector( new TriFadcScin("s2", "S2 Scintillator" ));
     HRSL->AddDetector( new THaShower("prl1", "Pre-shower pion rej." ));
     HRSL->AddDetector( new THaShower("prl2", "Show pion rej." )); 
-
-    if(bOldTrack){
-       THaApparatus* OldTrackL = new TriHRS("OldTrackL","old analyzer track");
-       OldTrackL->AddDetector( new TriXscin("s0","s0 sintillator",kFALSE) );
-       gHaApps->Add( OldTrackL );
-     }
-
 
     //==================================
     //  Scaler
