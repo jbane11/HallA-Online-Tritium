@@ -46,26 +46,9 @@
 #include "TArray.h"
 #include "THaRun.h"
 #include "THaRunParameters.h"
-#include "TVector.h"
+
 
 const char* ROOTPATHS[] = {
-  "/run/media/jbane/Slim/MARATHONRoots/",
-  "/storage/MARATHONRootfiles/",
-  "/storage/MARATHONRootfiles/pass1/kin0/",
-  "/storage/MARATHONRootfiles/pass1/kin1/",
-  "/storage/MARATHONRootfiles/pass1/kin2/",
-  "/storage/MARATHONRootfiles/pass1/kin3/",
-  "/storage/MARATHONRootfiles/pass1/kin4/",
-  "/storage/MARATHONRootfiles/pass1/kin5/",
-  "/storage/MARATHONRootfiles/pass1/kin7/",
-  "/storage/MARATHONRootfiles/pass1/kin9/",
-  "/storage/MARATHONRootfiles/pass1/kin11/",
-  "/storage/MARATHONRootfiles/pass1/kin13/",
-  "/storage/MARATHONRootfiles/pass1/kin15/",
-  "/storage/MARATHONRootfiles/pass1/kin16/",
-  "/storage/MARATHONRootfiles/pass1/optics/",
-  "/storage/MARATHONRootfiles/pass1/positron/",
-  "/volatile/halla/triton/Marathon_Rootfiles/optics_trial/",
   "./tmproot/",
   "/home/shujie/jlab/MyTritium/Rootfiles/",
   "/volatile/halla/triton/nathaly/Rootfiles/",  
@@ -77,17 +60,6 @@ const char* ROOTPATHS[] = {
   "/chafs1/work1/tritium/Rootfiles/",
   "/volatile/halla/triton/shujie/replay/Rootfiles/",
   "/volatile/halla/triton/Tritium_Rootfiles/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin1/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin2/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin3/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin4/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin5/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin7/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin9/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin11/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin13/"
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin15/",
-  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin16/",
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin0/",
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin1/",
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin2/",
@@ -100,38 +72,44 @@ const char* ROOTPATHS[] = {
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin13/",
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin15/",
   "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1_calibration/kin16/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin1/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin2/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin3/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin4/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin5/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin7/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin9/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin11/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin13/"
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin15/",
+  "/v/lustre2/expphy/cache/halla/triton/prod/marathon/pass1/kin16/",
   "./",
   0
 };
 
 const char* MCPATHS[] = {
-	"/run/media/jbane/Slim/",
 	"./mcroot/",
 	0
 };
 
 const double pi=3.1415926535897932;
 const double rad=pi/180.0;
-const double wsqr=2.5;
+
 //-----------LHRS-----------------------------------------
 const double beta_min_L=0.5;
 const double sh_min_L=0.7;
 const double cer_min_L=1500;
-const double dnew_thres = 0.1;
 
-TCut L_dnew = Form("LeftBCMev.current_dnew>=%f",dnew_thres);
-TCut R_dnew = Form("RightBCMev.current_dnew>=%f",dnew_thres);
 TCut sh_cut_L       = Form("(L.prl1.e+L.prl2.e)>HacL_D1_P0rb*1000*%g",sh_min_L);
 TCut cer_cut_L      = Form("L.cer.asum_c>%g",cer_min_L);
 TCut beta_cut_L     = Form("L.tr.beta>%g",beta_min_L);
 TCut electron_cut_L = cer_cut_L+sh_cut_L+beta_cut_L;
-TCut inv_m_L	    = Form("EKLx.W2>=%g",wsqr);
 
 TCut track_L        = "L.tr.n==1";
 TCut aperture_L     = "((L.tr.tg_y+L.tr.tg_ph*1.5)^2/0.64+(L.tr.tg_th*1.5)^2/0.49)<0.01";
-const double tg_dp_L=0.03;
-const double tg_th_L=0.03;
-const double tg_ph_L=0.03;
+const double tg_dp_L=0.05;
+const double tg_th_L=0.05;
+const double tg_ph_L=0.04;
 const double tg_vz_L=0.09;
 TCut dp_cut_L=Form("fabs(L.tr.tg_dp)<%g",tg_dp_L);
 TCut th_cut_L=Form("fabs(L.tr.tg_th)<%g",tg_th_L);
@@ -174,7 +152,6 @@ TCut th_cut_R_e  = Form("fabs(R.tr.tg_th)<%g",tg_th_R_e);
 TCut ph_cut_R_e  = Form("fabs(R.tr.tg_ph)<%g",tg_ph_R_e);
 TCut acc_cut_R_e = dp_cut_R_e+th_cut_R_e+ph_cut_R_e+z_cut_R;//+aperture_L;
 
-TCut inv_m_R	    = Form("EKRx.W2>=%g",wsqr);
 
 
 
@@ -206,7 +183,7 @@ TChain* LoadRun(Int_t run, const char* path, const char* tree, Int_t debug)
    delete tt;
    tt = 0;
   }
-	else{ cout << "Using run located at " << path<<endl;}
+
   return tt;
 }
 
@@ -288,8 +265,8 @@ TChain* LoadMC(Int_t run, int tarid=0, const char* tree = "h9040")
 	if(tarid>0){ tgt=Form("_%d",tarid);}
 	TChain *tt = new TChain(tree);
 	tt->Add(Form("%smc%d%s.root",MCPATHS[0],run,tgt.Data()));
-	if(tt->GetEntries()==0){return nullptr;}
-	else{cout << "adding " <<Form("%smc%d.root",MCPATHS[0],run)<<"\n";}
+	if(tt==nullptr){cout <<"no mc file"<<"\n";}
+//	else{cout << "adding " <<Form("%smc%d.root",MCPATHS[0],run)<<"\n";}
 	return tt;
 }
 // get rootfile path
@@ -352,7 +329,7 @@ TArrayI GetPS(TTree* tt)
 Int_t GetPS(TTree* tt,Int_t trigger)
 {
     THaRun* run = GetRunData(tt);
-    Int_t ps=0;
+    Int_t ps;
     if (run) {
        ps = run->GetParameters()->GetPrescales()[trigger-1];
       delete run;
