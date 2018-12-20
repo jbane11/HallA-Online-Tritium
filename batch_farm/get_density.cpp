@@ -18,19 +18,19 @@ Double_t H1Boiling(Double_t I){
 }
 
 Double_t He3Density(Double_t I){
-  return 0.0534*He3Boiling(I)/25;
+  return 0.002*He3Boiling(I);
 }
 
 Double_t H3Density(Double_t I){
-  return 0.077*H3Boiling(I)/25;
+  return .003404*H3Boiling(I);
 }
 
 Double_t D2Density(Double_t I){
-  return 0.1422*D2Boiling(I)/25;
+  return 0.005686*D2Boiling(I);
 }
 
 Double_t H1Density(Double_t I){
-  return 0.0708*H1Boiling(I)/25;
+  return 0.002832*H1Boiling(I);
 }
 
 void get_density(){

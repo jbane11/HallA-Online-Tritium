@@ -50,10 +50,16 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   TString target;
   target = TString(gSystem->Getenv("TARG"));
   const char* dens = gSystem->Getenv("DENSITY");
-  Double_t Density = atod(dens);
+  Double_t Density=0;
+  if(TString(dens)!=""){
+    Density = atof(dens);
+  }
+
   if(Density==0){
     bEloss=kFALSE;
   }
+  cout << target << endl;
+  cout << Density << endl;
 
   const char* RNAME=rootname.Data();
   TString ODEF;
@@ -65,9 +71,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
   if(RIGHT_ARM_CONDITION){
     if(TString("yes").CompareTo(gSystem->Getenv("CALIBRATION_RUN"))==0){
-      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass1_calibration.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass2_calibration.odef");
     }else{
-      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass1.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass2.odef");
     }
     CUTS=Form(REPLAY_DIR_PREFIX,"RHRS.cuts");
     //==================================
@@ -97,8 +103,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Tritium_THaScaler100EvtHandler* rEndscaler = new Tritium_THaScaler100EvtHandler("EndRight","HA scaler event type 100");
       gHaEvtHandlers->Add(rEndscaler);
 
-      // Marco - F1 and VETROC tdcs:
-      gHaEvtHandlers->Add (new TdcDataEvtHandler("RTDC","F1 and VETROC TDCs rHRS")); // do not change the "RTDC" word
       // Evan - V1495 Clock Counter:
       gHaEvtHandlers->Add (new ClockCountEvtHandler("RV1495","V1495 RHRS"));
     }
@@ -201,9 +205,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   
   else if(LEFT_ARM_CONDITION){
     if(TString("yes").CompareTo(gSystem->Getenv("CALIBRATION_RUN"))==0){
-      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass1_calibration.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass2_calibration.odef");
     }else{
-      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass1.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass2.odef");
     }
     CUTS=Form(REPLAY_DIR_PREFIX,"LHRS.cuts");
     //==================================
@@ -233,8 +237,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     Tritium_THaScaler100EvtHandler* lEndscaler = new Tritium_THaScaler100EvtHandler("EndLeft","HA scaler event type 100");
     gHaEvtHandlers->Add(lEndscaler);
 
-    // Marco - for F1 tdc:
-    gHaEvtHandlers->Add (new TdcDataEvtHandler("LTDC","F1 TDCs lHRS")); // do not change the "LTDC" word
     // Evan - V1495 Clock Counter:
     gHaEvtHandlers->Add (new ClockCountEvtHandler("LV1495","V1495 RHRS"));
     }

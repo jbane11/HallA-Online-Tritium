@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ "$2" == "p" ] || [ "$3" == "p" ] ; 
+then
+  for dat in *p_kin$1[_.]*dat;
+  do
+    echo $dat
+    if [ "$2" == "calibration" ] || [ "$3" == "calibration" ] ;
+    then
+      genjob $dat calibration
+    else
+      genjob $dat
+    fi
+  done
+else
+  for dat in *[!p]_kin$1[_.]*dat; 
+  do 
+    echo $dat
+    if [ "$2" == "calibration" ] || [ "$3" == "calibration" ] ;
+    then
+      genjob $dat calibration
+    else
+      genjob $dat
+    fi
+  done
+fi

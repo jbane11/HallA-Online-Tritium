@@ -13,7 +13,7 @@
 #
 
 #Set up Directories.
-ANALYZERDIR=/work/halla/triton/MARATHON_Replay/analyzer1.6
+ANALYZERDIR=/work/halla/triton/MARATHON_Replay/ana_new
 VOLATILEDIR=/volatile/halla/triton/Marathon_Rootfiles/
 RAWDIR=/lustre/expphy/cache/halla/triton/raw/
 DB_DIR=/work/halla/triton/tjhague/replay_tritium/replay/DB
@@ -43,6 +43,11 @@ list_name=${list_name#*_}
 target=${runfile%%_*}
 
 echo ${target}
+if [[ $target == *p ]] ;
+then
+  target=${target%p}
+  list_name=${list_name}p
+fi
 
 calib=0
 if [ "$2" == "calibration" ]; then
@@ -144,11 +149,11 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
 ################################
 #    Submit job to the farm    #  
 ################################
-#    if [ $calib == 1 ]; then
-#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
-#    else
-#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
-#    fi
+    if [ $calib == 1 ]; then
+      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
+    else
+      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
+    fi
 ################################
 ################################
 
