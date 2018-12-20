@@ -38,8 +38,7 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   Bool_t bHelicity=kFALSE;
   Bool_t bBeam=kTRUE;
   Bool_t bPhysics=kTRUE;
-  Bool_t bEloss=kFALSE;
-  Bool_t bOldTrack=kFALSE;
+  Bool_t bEloss=kTRUE;
   
   TString rootname;
   if(OnlineReplay){
@@ -48,6 +47,19 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     rootname = "%s/tritium_%d.root";
   }
 
+  TString target;
+  target = TString(gSystem->Getenv("TARG"));
+  const char* dens = gSystem->Getenv("DENSITY");
+  Double_t Density=0;
+  if(TString(dens)!=""){
+    Density = atof(dens);
+  }
+
+  if(Density==0){
+    bEloss=kFALSE;
+  }
+  cout << target << endl;
+  cout << Density << endl;
 
   const char* RNAME=rootname.Data();
   TString ODEF;
@@ -59,9 +71,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
   if(RIGHT_ARM_CONDITION){
     if(TString("yes").CompareTo(gSystem->Getenv("CALIBRATION_RUN"))==0){
-      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass1_calibration.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass2_calibration.odef");
     }else{
-      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass1.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"RHRS_pass2.odef");
     }
     CUTS=Form(REPLAY_DIR_PREFIX,"RHRS.cuts");
     //==================================
@@ -77,12 +89,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     HRSR->AddDetector( new TriFadcScin("s2", "S2 Scintillator - FADC" ));
     HRSR->AddDetector( new THaShower("ps", "Pre-shower pion rej." ));
     HRSR->AddDetector( new THaShower("sh", "Show pion rej." ));
-    
-    if(bOldTrack){
-       THaApparatus* OldTrackR = new TriHRS("OldTrackR","old analyzer track");
-       OldTrackR->AddDetector( new TriXscin("s0","s0 sintillator",kTRUE) );
-       gHaApps->Add( OldTrackR );
-     }
 
     //==================================
     //  Scalers
@@ -97,8 +103,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Tritium_THaScaler100EvtHandler* rEndscaler = new Tritium_THaScaler100EvtHandler("EndRight","HA scaler event type 100");
       gHaEvtHandlers->Add(rEndscaler);
 
-      // Marco - F1 and VETROC tdcs:
-      gHaEvtHandlers->Add (new TdcDataEvtHandler("RTDC","F1 and VETROC TDCs rHRS")); // do not change the "RTDC" word
       // Evan - V1495 Clock Counter:
       gHaEvtHandlers->Add (new ClockCountEvtHandler("RV1495","V1495 RHRS"));
     }
@@ -130,29 +134,23 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Double_t mass_H2 = 2.01410178*amu;
       Double_t mass_H3 = 3.0160492*amu;
       Double_t mass_tg = 0.938; //default target 
+      Int_t A = 1;
+      Int_t Z = 1;
 
-      string word[5],line;
-      TString filename = Form("/adaqfs/home/adaq/epics/runfiles_tritium_R/Start_of_Run_%d.epics",runnumber);
-      ifstream infile;
-      infile.open(filename);
-      double pos=0;
-      double t2=33106235;
-      double d2=29367355;
-      double he3=21875520;
-
-      while(getline(infile,line)){
-            istringstream str(line);
-            str>>word[0]>>word[1];
-            if(word[0]=="Encoder" && word[1]=="Position"){
-               str>>word[2]>>word[3];
-               pos = atof(word[3].c_str()); 
-               if(abs(pos-t2)<50) mass_tg=mass_H3/3.0;
-               else if(abs(pos-d2)<50) mass_tg=mass_H2/2.0;
-               else if(abs(pos-he3)<50)mass_tg=mass_He3/3.0;
-               break;
-            }
+      if(target=="He3"){
+        mass_tg = mass_He3/3.;
+        Z = 2;
+        A = 3;
+      }else if(target=="H3"){
+        mass_tg = mass_H3/3.;
+        Z = 1;
+        A = 3;
+      }else if(target=="D2"){
+        mass_tg = mass_H2/2.;
+        Z = 1;
+        A = 2;
       }
-  
+ 
       THaPhysicsModule *Rgold = new THaGoldenTrack( "R.gold", "HRS-R Golden Track", "R" );
       gHaPhysics->Add(Rgold);
 
@@ -177,30 +175,28 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       gHaPhysics->Add(BCM);
       THaPhysicsModule* BCMev = new TriBCM("RightBCMev","Beam Current Monitors","Right","ev",0);
       gHaPhysics->Add(BCMev);
-      /*if(bEloss){
+      if(bEloss){
         // Beam Energy Loss
-        Double_t zbeam_off = -0.075 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
+        Double_t zbeam_off = -0.125 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
        
-        Gmp_Beam_Eloss *ElbR = new Gmp_Beam_Eloss("ElbR","Beam Corrected for Energy Loss",beamchoice,"rpr",zbeam_off);
+        Tri_Beam_Eloss *ElbR = new Tri_Beam_Eloss("ElbR","Beam Corrected for Energy Loss","Rrb","rpr",zbeam_off);
         ElbR->SetDebug(1);
-        ElbR->SetMedium(1.,1.00727,0.0723); // Set medium assuming LH2 Target. According to the Cryotarget Training Slides,
-                                           // the density should be 0.0723 g/cc (agrees more or less w/ NIST table).
+        ElbR->SetMedium(Z,A,Density);
         gHaPhysics->Add(ElbR);
         
         //Track Energy Loss
-        Double_t targ_length = 0.15 ; // In meters. Set to 15 cm for GMp LH2 target
+        Double_t targ_length = 0.25 ; 
         Double_t ztrack_off = 0. ; //For a target centered at z=0, this should equal to 0. (in m)
-        Double_t air_length = 0.3757; // In meters. Set to 0.3543 m for RHRS and 0.2697 m for LHRS for Spring 16.
-                                     //            Set to 0.3757 m for RHRS and 0.3868 m for LHRS for Fall 16.
+        Double_t air_length = 0.8160;
        
-        Gmp_Track_Eloss *EltR = new Gmp_Track_Eloss("EltR","Track Corrected for Energy Loss","exR","rpr",targ_length,ztrack_off,air_length);
+        Tri_Track_Eloss *EltR = new Tri_Track_Eloss("EltR","Track Corrected for Energy Loss","exR","rpr",targ_length,ztrack_off,air_length);
         EltR->SetDebug(1);
-        EltR->SetMedium(1.,1.00727,0.0723); // See above for explanation.
+        EltR->SetMedium(Z,A,Density);
         gHaPhysics->Add(EltR);
 
-        THaPhysicsModule *EKRxe = new THaElectronKine("EKRxe","Best Corrected Electron kinematics in HRS-R","EltR","ElbR",mass_tg);
+        THaPhysicsModule *EKRxe = new THaElectronKine("EKRxe","Energy Loss Corrected Electron kinematics in HRS-R","EltR","ElbR",mass_tg);
         gHaPhysics->Add(EKRxe);
-      }*/
+      }
     }
   }
   //==================================
@@ -209,9 +205,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   
   else if(LEFT_ARM_CONDITION){
     if(TString("yes").CompareTo(gSystem->Getenv("CALIBRATION_RUN"))==0){
-      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass1_calibration.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass2_calibration.odef");
     }else{
-      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass1.odef");
+      ODEF=Form(REPLAY_DIR_PREFIX,"LHRS_pass2.odef");
     }
     CUTS=Form(REPLAY_DIR_PREFIX,"LHRS.cuts");
     //==================================
@@ -228,13 +224,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     HRSL->AddDetector( new THaShower("prl1", "Pre-shower pion rej." ));
     HRSL->AddDetector( new THaShower("prl2", "Show pion rej." )); 
 
-    if(bOldTrack){
-       THaApparatus* OldTrackL = new TriHRS("OldTrackL","old analyzer track");
-       OldTrackL->AddDetector( new TriXscin("s0","s0 sintillator",kFALSE) );
-       gHaApps->Add( OldTrackL );
-     }
-
-
     //==================================
     //  Scaler
     //==================================
@@ -248,8 +237,6 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
     Tritium_THaScaler100EvtHandler* lEndscaler = new Tritium_THaScaler100EvtHandler("EndLeft","HA scaler event type 100");
     gHaEvtHandlers->Add(lEndscaler);
 
-    // Marco - for F1 tdc:
-    gHaEvtHandlers->Add (new TdcDataEvtHandler("LTDC","F1 TDCs lHRS")); // do not change the "LTDC" word
     // Evan - V1495 Clock Counter:
     gHaEvtHandlers->Add (new ClockCountEvtHandler("LV1495","V1495 RHRS"));
     }
@@ -282,27 +269,21 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
       Double_t mass_H2 = 2.01410178*amu;
       Double_t mass_H3 = 3.0160492*amu;
       Double_t mass_tg = 0.938; //default target 
-
-      string word[5],line;
-      TString filename = Form("/adaqfs/home/adaq/epics/runfiles_tritium_L/Start_of_Run_%d.epics",runnumber);
-      ifstream infile;
-      infile.open(filename);
-      double pos=0;
-      double t2=33106235;
-      double d2=29367355;
-      double he3=21875520;
-
-      while(getline(infile,line)){
-            istringstream str(line);
-            str>>word[0]>>word[1];
-            if(word[0]=="Encoder" && word[1]=="Position"){
-               str>>word[2]>>word[3];
-               pos = atof(word[3].c_str());
-               if(abs(pos-t2)<50) mass_tg=mass_H3/3.0;
-               else if(abs(pos-d2)<50) mass_tg=mass_H2/2.0;
-               else if(abs(pos-he3)<50)mass_tg=mass_He3/3.0;
-               break;
-            }
+      Int_t A = 1;
+      Int_t Z = 1;
+      
+      if(target=="He3"){
+        mass_tg = mass_He3/3.;
+        Z=2;
+        A=3;
+      }else if(target=="H3"){
+        mass_tg = mass_H3/3.;
+        Z=1;
+        A=3;
+      }else if(target=="D2"){
+        mass_tg = mass_H2/2.;
+        Z=1;
+        A=2;
       }
      
       THaPhysicsModule *Lgold = new THaGoldenTrack( "L.gold", "HRS-L Golden Track", "L" );
@@ -331,30 +312,28 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
 
       THaPhysicsModule* BCMev = new TriBCM("LeftBCMev","Beam Current Monitors","Left","ev",0);
 	  gHaPhysics->Add(BCMev);
-      /*if(bEloss){
+      if(bEloss){
         // Beam Energy Loss
-        Double_t zbeam_off = -0.075 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
+        Double_t zbeam_off = -0.125 ; //For a target centered at z=0, this should equal to the targetlength/2. (in m)
         
-        Gmp_Beam_Eloss *ElbL = new Gmp_Beam_Eloss("ElbL","Beam Corrected for Energy Loss",beamchoice,"rpr",zbeam_off);
+        Tri_Beam_Eloss *ElbL = new Tri_Beam_Eloss("ElbL","Beam Corrected for Energy Loss","Lrb","rpl",zbeam_off);
         ElbL->SetDebug(1);
-        ElbL->SetMedium(1.,1.00727,0.0723); // Set medium assuming LH2 Target. According to the Cryotarget Training Slides,
-                                           // the density should be 0.0723 g/cc (agrees more or less w/ NIST table).
+        ElbL->SetMedium(Z,A,Density);
         gHaPhysics->Add(ElbL);
         
         //Track Energy Loss
-        Double_t targ_length = 0.15 ; // In meters. Set to 15 cm for GMp LH2 target
+        Double_t targ_length = 0.25 ;
         Double_t ztrack_off = 0. ; //For a target centered at z=0, this should equal to 0. (in m)
-        Double_t air_length = 0.3757; // In meters. Set to 0.3543 m for RHRS and 0.2697 m for LHRS for Spring 16.
-                                      //            Set to 0.3757 m for RHRS and 0.3868 m for LHRS for Fall 16.
+        Double_t air_length = 0.8160;
         
-        Gmp_Track_Eloss *EltL = new Gmp_Track_Eloss("EltL","Track Corrected for Energy Loss","exL","rpl",targ_length,ztrack_off,air_length);
+        Tri_Track_Eloss *EltL = new Tri_Track_Eloss("EltL","Track Corrected for Energy Loss","exL","rpl",targ_length,ztrack_off,air_length);
         EltL->SetDebug(1);
-        EltL->SetMedium(1.,1.00727,0.0723); // See above for explanation.
+        EltL->SetMedium(Z,A,Density);
         gHaPhysics->Add(EltL);
 
-        THaPhysicsModule *EKLxe = new THaElectronKine("EKLxe","Best Corrected Electron kinematics in HRS-L","EltL","ElbL",mass_tg);
+        THaPhysicsModule *EKLxe = new THaElectronKine("EKLxe","Energy Loss Corrected Electron kinematics in HRS-L","EltL","ElbL",mass_tg);
         gHaPhysics->Add(EKLxe);
-      }*/
+      }
     }
   }
   

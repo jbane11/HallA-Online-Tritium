@@ -217,6 +217,29 @@ TargetInfo GetTarget(Int_t run)
   return target;
 }
 
+double GetAvgCurrentSQL(int run, int thres=0){
+  double current=0.0;
+
+  string cur_n = Form("current%d",thres);
+
+  CODASetting    coda     = GetCODASetting(run);
+  // AnalysisInfo  Ainfo     = GetAnalysisInfo(run);
+  // if(Ainfo.status == -1){cout <<"Not in analysis DB \n"; exit(1);}
+  TSQLServer*    Server   = TSQLServer::Connect(mysql_connection.Data(),mysql_user.Data(),mysql_password.Data());
+  TString        query    = Form("select run_number, %s from %schargelist where run_number=%d;",cur_n.c_str(), coda.experiment.Data(),run);
+
+  TSQLResult* result=Server->Query(query.Data());
+  if( result->GetRowCount()>0){
+    TSQLRow *row= result->Next();
+    current= atof(row->GetField(1));
+
+  }
+  else{
+    cout << "run not in charge run list"<<endl;
+  }
+
+  return current;
+}
 
 //-----------------------------
 // Get analysis info from SQL table <experiment>analysis
