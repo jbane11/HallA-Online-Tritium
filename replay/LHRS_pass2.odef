@@ -84,15 +84,19 @@ block exL.*
 block EKL.*
 block EKLc.*
 block EKLx.*
-#block ElbL.*
-#block EltL.*
-#block EKLxe.*
+block ElbL.*
+block EltL.*
+block EKLxe.*
 block LeftBCM*
 
 Variable Lrb.dir.x
 Variable Lrb.dir.y
 Variable Lrb.x
 Variable Lrb.y
+Variable Lrb.Raster.rawcur.x
+Variable Lrb.Raster.rawcur.y
+Variable Lrb.Raster2.rawcur.x
+Variable Lrb.Raster2.rawcur.y
 
 # ------------------------------------------------------------------
 # Event type 140 

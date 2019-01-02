@@ -33,11 +33,12 @@
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriFadcScin/libTriFadcScin.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriFadcCherenkov/libTriFadcCherenkov.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriFadcXscin/libTriFadcXscin.so"));
-    gSystem->Load(Form("./libraries/Tritium_HRS/libTritium_HRS.so"));
+    gSystem->Load(Form(replay_dir_prefix,"libraries/Tritium_HRS/libTritium_HRS.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/Tritium_TSScaler/libTritium_TSScaler.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/Tritium_Evt100/libTritium_THaScaler100EvtHandler.so"));
-    gSystem->Load(Form(replay_dir_prefix,"libraries/Tritium_Beam_Eloss/libTritium_Beam_Eloss.so"));
-    gSystem->Load(Form(replay_dir_prefix,"libraries/Tritium_Track_Eloss/libTritium_Track_Eloss.so"));
+    gSystem->Load(Form(replay_dir_prefix,"libraries/Tri_ElossCorrection/libTri_ElossCorrection.so"));
+    gSystem->Load(Form(replay_dir_prefix,"libraries/Tri_Beam_Eloss/libTri_Beam_Eloss.so"));
+    gSystem->Load(Form(replay_dir_prefix,"libraries/Tri_Track_Eloss/libTri_Track_Eloss.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriScalerEvtHandler/libTriScaler.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriFadcRasteredBeam/libTriFadcRasteredBeam.so"));
     gSystem->Load(Form(replay_dir_prefix,"libraries/TriVDCeff/libTriVDCeff.so"));

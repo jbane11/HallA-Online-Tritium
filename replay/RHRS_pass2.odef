@@ -89,14 +89,18 @@ block exR.*
 block EKR.*
 block EKRc.*
 block EKRx.*
-#block ElbR.*
-#block EltR.*
-#block EKRxe.*
+block ElbR.*
+block EltR.*
+block EKRxe.*
 
 Variable Rrb.dir.x
 Variable Rrb.dir.y
 Variable Rrb.x
 Variable Rrb.y
+Variable Rrb.Raster.rawcur.x
+Variable Rrb.Raster.rawcur.y
+Variable Rrb.Raster2.rawcur.x
+Variable Rrb.Raster2.rawcur.y
 
 block RightBCM*
 
