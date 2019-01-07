@@ -50,6 +50,12 @@ void get_density(){
     density=D2Density(current);
   }
 
+  if(density==0){
+    ofstream err("no_current.txt",std::ofstream::app);
+    err << run << " " << targ << endl;
+    err.close();
+  }
+
   ofstream f(Form("batch_files/batch_%d",run),std::ofstream::app);
   f << "export DENSITY=" << density << endl;
   f.close();
