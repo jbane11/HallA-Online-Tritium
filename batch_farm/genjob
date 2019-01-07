@@ -92,6 +92,7 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
       export run=${krun}
       analyzer -l -q get_density.cpp
     else
+      echo "poop"
       echo "export DENSITY=0" >>batch_files/batch_${krun}
     fi
     if [ $calib == 1 ]; then
@@ -148,11 +149,11 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
 ################################
 #    Submit job to the farm    #  
 ################################
-    if [ $calib == 1 ]; then
-      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
-    else
-      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
-    fi
+#    if [ $calib == 1 ]; then
+#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name}_calib -create -script ./batch_files/jscript_${krun}
+#    else
+#      swif add-jsub -workflow ${WORKFLOWFORM}${list_name} -create -script ./batch_files/jscript_${krun}
+#    fi
 ################################
 ################################
 
