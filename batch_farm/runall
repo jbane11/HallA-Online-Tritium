@@ -1,0 +1,41 @@
+#! /bin/sh
+
+genkin 0
+swif run -workflow h3_replay_kin0
+genkin 1
+swif run -workflow h3_replay_kin1
+genkin 2
+swif run -workflow h3_replay_kin2
+genkin 3
+swif run -workflow h3_replay_kin3
+genkin 4
+swif run -workflow h3_replay_kin4
+genkin 5
+swif run -workflow h3_replay_kin5
+genkin 7
+swif run -workflow h3_replay_kin7_1st
+swif run -workflow h3_replay_kin7_2nd
+genkin 9
+swif run -workflow h3_replay_kin9_1st
+swif run -workflow h3_replay_kin9_2nd
+genkin 11
+swif run -workflow h3_replay_kin11_1st
+swif run -workflow h3_replay_kin11_2nd
+genkin 13
+swif run -workflow h3_replay_kin13_1st
+swif run -workflow h3_replay_kin13_2nd
+genkin 15
+swif run -workflow h3_replay_kin15_1st
+swif run -workflow h3_replay_kin15_2nd
+swif run -workflow h3_replay_kin15_3rd
+genkin 16
+swif run -workflow h3_replay_kin16_1st
+swif run -workflow h3_replay_kin16_2nd
+genkin 1 p
+swif run -workflow h3_replay_kin1p
+genkin 2 p
+swif run -workflow h3_replay_kin2p
+genkin 3 p
+swif run -workflow h3_replay_kin3p
+genkin 5 p
+swif run -workflow h3_replay_kin5p
