@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for dat in $1*.dat;
+do
+  remove_runs $dat
+done

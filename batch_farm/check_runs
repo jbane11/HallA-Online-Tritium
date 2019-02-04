@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# Usage: farm_list
+#
+# This script creates batch_krun and jscript_krun in batch_files directory
+# and submits the job to the farms
+#
+# Feb 22   2011                                        Zhihong Ye
+# Feb 20   2018    updated for Triton                  Zhihong Ye
+# May/June 2018    More Tritium updates                Tyler Hague & Evan McClellan
+# July 6   2018    Friendliness/Portability Updates    Tyler Hague
+# Oct 19   2018    MARATHON Pass2 Updates              Tyler Hague
+#
+
+#Set up Directories.
+ANALYZERDIR=/work/halla/triton/MARATHON_Replay/ana_new
+VOLATILEDIR=/volatile/halla/triton/Marathon_Rootfiles/
+RAWDIR=/lustre/expphy/cache/halla/triton/raw/
+DB_DIR=/work/halla/triton/tjhague/replay_tritium/replay/DB
+TAPEDIR=/mss/halla/triton/prod/marathon/
+CACHEDIR=/cache/halla/triton/prod/marathon/
+REPLAYDIR=/work/halla/triton/tjhague/replay_tritium/replay/
+BATCHDIR=/work/halla/triton/tjhague/replay_tritium/batch_farm/
+PASS=pass2
+ROOTFILEFORM=tritium_
+RAWFILEFORM=triton_
+WORKFLOWFORM=h3_replay_
+
+
+#
+# Function to check if input is an integer
+#
+is_integer() {
+ case $1 in
+  *[!0-9]*) return 1;;
+  *) return 0;;
+ esac
+}
+
+runfile=$1
+echo $runfile
+list_name=${runfile%.*}
+list_name=${list_name#*_}
+target=${runfile%%_*}
+
+if [[ $target == *p ]] ;
+then
+  target=${target%p}
+  list_name=${list_name}p
+fi
+
+while read krun; do
+
+  if [ -e $TAPEDIR$PASS/$list_name/$ROOTFILEFORM${krun}.root ]; then
+    ls -la $TAPEDIR$PASS/$list_name/$ROOTFILEFORM$krun*.root
+  else
+    echo $krun" is not replayed"
+  fi
+ 
+done < $runfile
