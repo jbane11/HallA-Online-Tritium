@@ -58900,18 +58900,6 @@ R.off_y = -1.80e-03
 R.off_z = 5.32e-04
 
 
-#--------[ 1-01-00 02:32718:46 ]
-## parameters from EPICS run 6
-#ebeam = 0.003
-#L.theta = 4
-#L.pcentral = 5
-#FbusL.theta = 4
-#FbusL.pcentral = 5
-#OldTrackL.theta = 4
-#OldTrackL.pcentral = 5
-#MA = 0.93827
-
-
 
 --------[ 2018-04-12 13:10:06 ]
 # parameters from EPICS run 48.8094
@@ -58923,19 +58911,6 @@ FbusL.pcentral = 3.10004
 OldTrackL.theta = 33.5521
 OldTrackL.pcentral = 3.10004
 MA = 0.93827
-
-
-
-#--------[ 1-01-00 02:32701:46 ]
-## parameters from EPICS run 6
-#ebeam = 0.003
-#L.theta = 4
-#L.pcentral = 5
-#FbusL.theta = 4
-#FbusL.pcentral = 5
-#OldTrackL.theta = 4
-#OldTrackL.pcentral = 5
-#MA = 0.93827
 
 
 
@@ -58986,19 +58961,6 @@ L.pcentral = 3.10005
 FbusL.theta = 20.8798
 FbusL.pcentral = 3.10005
 OldTrackL.theta = 20.8798
-OldTrackL.pcentral = 3.10005
-MA = 0.93827
-
-
-
---------[ 2018-04-12 07:21:46 ]
-# parameters from EPICS run 2825
-ebeam = 4.30912
-L.theta = 20.8836
-L.pcentral = 3.10005
-FbusL.theta = 20.8836
-FbusL.pcentral = 3.10005
-OldTrackL.theta = 20.8836
 OldTrackL.pcentral = 3.10005
 MA = 0.93827
 

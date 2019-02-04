@@ -51,7 +51,7 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   target = TString(gSystem->Getenv("TARG"));
   const char* dens = gSystem->Getenv("DENSITY");
   Double_t Density=0;
-  if(TString(dens)!=""){
+  if(TString(dens)!="0"){
     Density = atof(dens);
     bEloss=kTRUE;
   }
