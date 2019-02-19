@@ -38,7 +38,7 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   Bool_t bHelicity=kFALSE;
   Bool_t bBeam=kTRUE;
   Bool_t bPhysics=kTRUE;
-  Bool_t bEloss=kTRUE;
+  Bool_t bEloss=kFALSE;
   
   TString rootname;
   if(OnlineReplay){
@@ -51,9 +51,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   target = TString(gSystem->Getenv("TARG"));
   const char* dens = gSystem->Getenv("DENSITY");
   Double_t Density=0;
-  if(TString(dens)!=""){
+  if(TString(dens)!="0"){
     Density = atof(dens);
-    bEloss=kFALSE;
+    bEloss=kTRUE;
   }
 
   cout << target << endl;

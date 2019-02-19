@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for dat in $1*.dat;
+do
+  check_runs $dat
+done
