@@ -53,11 +53,9 @@ void replay_tritium(Int_t runnumber=0,Int_t numevents=0,Int_t fstEvt=0,Bool_t Qu
   Double_t Density=0;
   if(TString(dens)!=""){
     Density = atof(dens);
-  }
-
-  if(Density==0){
     bEloss=kFALSE;
   }
+
   cout << target << endl;
   cout << Density << endl;
 

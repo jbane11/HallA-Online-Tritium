@@ -92,7 +92,6 @@ if [ -e $RAWDIR$RAWFILEFORM$krun".dat.0" ]; then
       export run=${krun}
       analyzer -l -q get_density.cpp
     else
-      echo "poop"
       echo "export DENSITY=0" >>batch_files/batch_${krun}
     fi
     if [ $calib == 1 ]; then
