@@ -37,7 +37,7 @@ cd /home/jbane/tritium/replay/HallA-Online-Tritium/SQL_backup
 git add ./*
 
 git commit -m "Automatic commit made for SQL backup on ${dd}"
-git push https://jbane11:1234Qwer@github.com/jbane11/HallA-Online-Tritium marathon
+git push https://jbane11:!2255Ball!@github.com/jbane11/HallA-Online-Tritium marathon
 
 
 
